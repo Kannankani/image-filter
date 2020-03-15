@@ -1,4 +1,6 @@
 import fs from 'fs';
+// import path = require('path');
+import path from 'path';
 import Jimp = require('jimp');
 
 // filterImageFromURL
@@ -39,10 +41,30 @@ export async function deleteLocalFiles(files:Array<string>){
     }
 }
 
-export async function cleanup() {
-    var findRemoveSync = require('find-remove');
 
-    setInterval(findRemoveSync.bind(this,__dirname + '/tmp', 
-        {age: {seconds: 3600}}), 360000)
-   
+export async function cleanup () {
+    const currentDir = __dirname + '/tmp';
+    const ageSeconds = 3600;
+
+    console.log ('starting cleanup for: ' + currentDir);
+    var filesInDir = fs.readdirSync(currentDir);
+    var now = new Date().getTime()
+
+    filesInDir.forEach(function (file) {
+        const currentFile = path.join(currentDir, file);
+        const stat = fs.statSync(currentFile);
+        const mtime = stat.mtime.getTime();
+        const expirationTime = (mtime + (ageSeconds * 1000));
+        if (!stat.isDirectory() && now > expirationTime) {
+            
+            try {
+                fs.unlinkSync(currentFile);
+                console.log ("rm file: " + file);
+            }
+            catch {
+
+            }
+            
+        }
+    })
 }

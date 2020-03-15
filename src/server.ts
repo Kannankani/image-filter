@@ -62,6 +62,6 @@ import {filterImageFromURL, deleteLocalFiles, cleanup} from './util/util';
   app.listen( port, () => {
       console.log( `server running http://localhost:${ port }` );
       console.log( `press CTRL+C to stop server` );
-      cleanup();
+      console.log(setInterval(cleanup, 360000));
   } );
 })();
