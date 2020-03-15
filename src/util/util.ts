@@ -9,8 +9,14 @@ import Jimp = require('jimp');
 // RETURNS
 //    an absolute path to a filtered image locally saved file
 export async function filterImageFromURL(inputURL: string): Promise<string>{
-    return new Promise( async resolve => {
-        const photo = await Jimp.read(inputURL);
+    return new Promise( async (resolve, reject) => {
+
+        var ret = false;
+        const photo = await Jimp.read(inputURL)
+                .catch(err => {reject(err); ret = true });
+        if (ret)
+            return;
+
         const outpath = '/tmp/filtered.'+Math.floor(Math.random() * 2000)+'.jpg';
         await photo
         .resize(256, 256) // resize
@@ -31,4 +37,12 @@ export async function deleteLocalFiles(files:Array<string>){
     for( let file of files) {
         fs.unlinkSync(file);
     }
+}
+
+export async function cleanup() {
+    var findRemoveSync = require('find-remove');
+
+    setInterval(findRemoveSync.bind(this,__dirname + '/tmp', 
+        {age: {seconds: 3600}}), 360000)
+   
 }
