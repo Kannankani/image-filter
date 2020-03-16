@@ -15,16 +15,11 @@ import Jimp = require('jimp');
 export async function filterImageFromURL(inputURL: string): Promise<string>{
     return new Promise( async (resolve, reject) => {
 
-        var ret = false;
-        var photo;
         const outpath = '/tmp/filtered.'+Math.floor(Math.random() * 2000)+'.jpg';
-
-        // photo = await Jimp.read (inputURL);
 
         Jimp.read (inputURL)
             .then (image => {
-                photo = image;
-                photo
+                image
                 .resize(256, 256)  
                 .quality(60) // set JPEG quality
                 .greyscale() // set greyscale
@@ -35,15 +30,7 @@ export async function filterImageFromURL(inputURL: string): Promise<string>{
             .catch (err => {
                 reject (err);
             })
-        /*
-        await photo
-        .resize(256, 256) // resize        try {
-        .quality(60) // set JPEG quality
-        .greyscale() // set greyscale
-        .write(__dirname+outpath, (img)=>{
-            resolve(__dirname+outpath);
-        });
-        */
+
     });
 }
 
@@ -61,7 +48,7 @@ export async function deleteLocalFiles(files:Array<string>){
 
 export async function cleanup () {
     const currentDir = __dirname + '/tmp';
-    const ageSeconds = 3600;
+    const ageSeconds = 3600; // older than an hour
 
     console.log ('starting cleanup for: ' + currentDir);
     var filesInDir = fs.readdirSync(currentDir);
