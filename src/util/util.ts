@@ -2,6 +2,8 @@ import fs from 'fs';
 // import path = require('path');
 import path from 'path';
 import Jimp = require('jimp');
+// import Jimp from 'jimp'
+
 
 // filterImageFromURL
 // helper function to download, filter, and save the filtered image locally
@@ -14,19 +16,34 @@ export async function filterImageFromURL(inputURL: string): Promise<string>{
     return new Promise( async (resolve, reject) => {
 
         var ret = false;
-        const photo = await Jimp.read(inputURL)
-                .catch(err => {reject(err); ret = true });
-        if (ret)
-            return;
-
+        var photo;
         const outpath = '/tmp/filtered.'+Math.floor(Math.random() * 2000)+'.jpg';
+
+        // photo = await Jimp.read (inputURL);
+
+        Jimp.read (inputURL)
+            .then (image => {
+                photo = image;
+                photo
+                .resize(256, 256)  
+                .quality(60) // set JPEG quality
+                .greyscale() // set greyscale
+                .write(__dirname+outpath, (img)=>{
+                    resolve(__dirname+outpath);
+                })
+            })
+            .catch (err => {
+                reject (err);
+            })
+        /*
         await photo
-        .resize(256, 256) // resize
+        .resize(256, 256) // resize        try {
         .quality(60) // set JPEG quality
         .greyscale() // set greyscale
         .write(__dirname+outpath, (img)=>{
             resolve(__dirname+outpath);
         });
+        */
     });
 }
 
